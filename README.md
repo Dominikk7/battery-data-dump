@@ -12,5 +12,5 @@ docker-compose up -d
 
 Open `http://localhost:8086` and connect your Android device (USB debugging must be enabled).
 
-# Contributing
+## Contributing
 Any contributions welcome
