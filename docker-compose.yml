@@ -1,0 +1,8 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.serve
+    image: adb-battery-graph-dev:latest
+    ports:
+      - "8086:80"

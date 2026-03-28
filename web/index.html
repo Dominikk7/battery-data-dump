@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Data Dump</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" href="favicon.ico">
+    <link rel="manifest" href="site.webmanifest">
+    <!-- Bundled App -->
+    <script type="module" src="dist/main.bundle.js" defer></script>
+</head>
+<body>
+    <div class="ambient-shape ambient-shape-1" aria-hidden="true"></div>
+    <div class="ambient-shape ambient-shape-2" aria-hidden="true"></div>
+
+    <main class="page-shell">
+        <header class="hero">
+            <div class="title-wrap">
+                <h1>Battery Data Dump</h1>
+                <p class="hero-help-link">
+                    <a href="https://www.lifewire.com/enable-usb-debugging-android-4690927" target="_blank" rel="noopener noreferrer">How to enable USB debugging on Android</a> | 
+                    <a href="https://github.com/Dominikk7/battery-data-dump" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                </p>
+                <p class="lead">Connect your Android phone, enable usb debugging, and click "Connect Device"</p>
+                <p class="lead-command">Runs command: <code>dumpsys battery</code></p>
+            </div>
+
+            <div class="controls card-like">
+                <div class="button-row">
+                    <button id="connectBtn" class="primary-btn">Connect Device</button>
+                    <button id="disconnectBtn" class="secondary-btn" style="display: none;">Disconnect</button>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">ADB status</span>
+                    <span id="status" class="status-disconnected">Disconnected</span>
+                </div>
+                <div id="errorBox" class="error-box" style="display: none;"></div>
+            </div>
+        </header>
+
+        <section class="top-grid">
+            <article class="level-panel card-like">
+                <h2>Battery Level</h2>
+                <div class="gauge-wrap">
+                    <div id="levelGauge" class="level-gauge" style="--level: 0;">
+                        <div class="gauge-center">
+                            <span id="valLevel">--%</span>
+                            <small id="valStatus">Unknown</small>
+                        </div>
+                    </div>
+                    <div class="gauge-meta">
+                        <p><span>Power Source</span><strong id="valSource">Unknown</strong></p>
+                        <p><span>Capacity Health (ASOC)</span><strong id="valHealth">--%</strong></p>
+                        <p><span>Live Current</span><strong id="valCurrent">-- mA</strong></p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="metrics-grid card-like">
+                <h2>Live Snapshot</h2>
+                <div class="metric-cards">
+                    <div class="metric">
+                        <span>Temperature</span>
+                        <strong id="valTemp">-- °C</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Voltage</span>
+                        <strong id="valVoltage">-- mV</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Estimated Charge</span>
+                        <strong id="valChargeCounter">--</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Battery Usage Cycles</span>
+                        <strong id="valCycles">--</strong>
+                    </div>
+                </div>
+                <div class="chip-row" id="stateChips"></div>
+            </article>
+        </section>
+
+        <section class="insights-grid">
+            <article class="card-like">
+                <h2>Battery Metrics Summary</h2>
+                <div class="summary-table">
+                    <div class="summary-row"><span class="summary-label">Health (ASOC)<button type="button" class="summary-tip" data-tip="Absolute State-Of-Charge. The percentage of original design capacity currently available for use." aria-label="Health ASOC help">?</button></span><strong id="sumHealth">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Health Loss<button type="button" class="summary-tip" data-tip="The total amount of permanent capacity lost to chemical degradation." aria-label="Health Loss help">?</button></span><strong id="sumHealthLoss">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">First Use<button type="button" class="summary-tip" data-tip="The date the device was first powered on." aria-label="First Use help">?</button></span><strong id="sumFirstUse">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Manufactured<button type="button" class="summary-tip" data-tip="The date the battery cell was produced." aria-label="Manufactured help">?</button></span><strong id="sumManufactured">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">First Boot Gap<button type="button" class="summary-tip" data-tip="The duration the battery spent in storage before its initial use." aria-label="First Boot Gap help">?</button></span><strong id="sumBootGap">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Battery Age<button type="button" class="summary-tip" data-tip="The total time elapsed since the battery was first put into use." aria-label="Battery Age help">?</button></span><strong id="sumAge">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Temperature<button type="button" class="summary-tip" data-tip="The current battery temperature." aria-label="Temperature help">?</button></span><strong id="sumTemp">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Charge Limit<button type="button" class="summary-tip" data-tip="A software-enforced charging ceiling." aria-label="Charge Limit help">?</button></span><strong id="sumLimit">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Charging Speed<button type="button" class="summary-tip" data-tip="Reported charging speed category." aria-label="Charging Speed help">?</button></span><strong id="sumChargeSpeed">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Equivalent Full Cycles<button type="button" class="summary-tip" data-tip="Estimated equivalent full cycles, where one cycle equals a full discharge and recharge." aria-label="Equivalent Full Cycles help">?</button></span><strong id="sumFullCycles">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Avg Cycles / Day<button type="button" class="summary-tip" data-tip="A metric of daily usage intensity." aria-label="Avg Cycles per Day help">?</button></span><strong id="sumCyclesPerDay">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Full Status Time<button type="button" class="summary-tip" data-tip="The total cumulative time the battery has spent sitting at maximum charge." aria-label="Full Status Time help">?</button></span><strong id="sumFullHours">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Peak Temperature<button type="button" class="summary-tip" data-tip="The maximum reported temperature (historical)." aria-label="Peak Temperature help">?</button></span><strong id="sumPeakTemp">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Peak Current<button type="button" class="summary-tip" data-tip="The maximum amount of charging current (historical)." aria-label="Peak Current help">?</button></span><strong id="sumPeakCurrent">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Remain (Latest)<button type="button" class="summary-tip" data-tip="The estimated time required to reach the charge limit at the current charging rate." aria-label="Remain Latest help">?</button></span><strong id="sumRemain">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">Battery QR / Part Number<button type="button" class="summary-tip" data-tip="Battery identification string reported by BattInfo QrData (part number + batch tokens)." aria-label="Battery QR and Part Number help">?</button></span><strong id="sumBatteryQr">--</strong></div>
+                    <div class="summary-row"><span class="summary-label">IC Auth Result<button type="button" class="summary-tip" data-tip="Verification status of the battery's internal hardware handshake." aria-label="IC Auth Result help">?</button></span><strong id="sumIcAuth">--</strong></div>
+                </div>
+            </article>
+        </section>
+
+        <section class="logs-grid">
+            <article class="card-like">
+                <h2>send commands</h2>
+                <pre id="commandLogText">No commands sent yet.</pre>
+            </article>
+            <article class="card-like raw-output">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <h2 style="margin: 0;">raw output</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="importCsvBtn" class="secondary-btn" style="padding: 6px 10px; font-size: 0.8rem; white-space: nowrap;">Import CSV</button>
+                        <input type="file" id="importCsvInput" accept=".csv" style="display: none;">
+                        <button id="exportCsvBtn" class="secondary-btn" style="padding: 6px 10px; font-size: 0.8rem; white-space: nowrap;">Export CSV</button>
+                    </div>
+                </div>
+                <pre id="rawText">No data yet.</pre>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
