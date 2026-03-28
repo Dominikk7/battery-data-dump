@@ -1,5 +1,7 @@
 # Battery Data Dump
 
+**Try it live:** [battery.sourcehex.com](https://battery.sourcehex.com)
+
 A web-based tool to read and visualize Android battery metrics directly from the browser using WebUSB and ADB (`dumpsys battery`). 
 
 ## Quick Start
